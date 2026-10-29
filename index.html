@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>El buzón de Valery</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FBF1E4;--dot:#F5C6DA;--paper:#FFFAF4;--ink:#7A2A4A;--title:#B01E58;--rose:#D93663;--x:#F9C7D9;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2B1B27;--dot:#47293E;--paper:#3A2536;--ink:#F8E4EE;--title:#FFA3C4;--x:#5C3050;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#2B1B27;--dot:#47293E;--paper:#3A2536;--ink:#F8E4EE;--title:#FFA3C4;--x:#5C3050;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:'Patrick Hand',system-ui,sans-serif;font-size:19px;color:var(--ink);background-color:var(--bg);background-image:radial-gradient(circle at 16px 16px,var(--dot) 9px,transparent 9.5px),radial-gradient(circle at 48px 48px,var(--dot) 9px,transparent 9.5px);background-size:64px 64px;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible{outline:3px solid var(--rose);outline-offset:4px;border-radius:12px}
+.stage{position:fixed;inset:0;overflow-y:auto;display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.wrap{margin:auto;position:relative;width:min(100%,420px);padding:0 14px}
+.mb{position:absolute;left:50%;top:50%;width:min(82vw,330px);transform:translate(-50%,-50%);z-index:1;transition:transform 1.8s cubic-bezier(.6,0,.9,.4) .9s,opacity .7s ease-in 2s}
+.mb.gone{transform:translate(-50%,-50%) scale(.04) rotate(10deg);opacity:0;pointer-events:none}
+.mb svg{display:block;width:100%;height:auto;animation:bob 3.4s ease-in-out infinite}
+.fh{animation:fl 3s ease-in-out infinite}.fh:nth-of-type(2){animation-delay:-1s}.fh:nth-of-type(3){animation-delay:-2s}
+@keyframes bob{50%{transform:translateY(-8px)}}
+@keyframes fl{50%{transform:translateY(-9px)}}
+.hint{position:absolute;left:0;right:0;bottom:-6vh;text-align:center;font-family:Caveat,cursive;font-weight:700;font-size:28px;color:var(--title);margin:0;opacity:0;animation:hi .8s ease 1.8s forwards;transition:opacity .3s}
+@keyframes hi{to{opacity:.85}}
+.hint.off{animation:none;opacity:0}
+.ttl{position:absolute;top:8px;left:0;right:0;text-align:center;font-family:Caveat,cursive;font-weight:700;font-size:40px;color:var(--title);margin:0;opacity:0;transition:opacity .8s ease 1.6s}
+.opened .ttl{opacity:1}
+.env{display:grid;grid-template-columns:1fr 1fr;gap:24px 12px;justify-items:center;padding:64px 0 24px;visibility:hidden;position:relative;z-index:2}
+.opened .env{visibility:visible}
+.e{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.eb{position:relative;display:block;width:min(40vw,160px);aspect-ratio:3/2;background:var(--c);border:3px solid #fff;border-radius:10px;box-shadow:0 8px 16px rgba(176,30,88,.16)}
+.ef{position:absolute;left:0;right:0;top:0;height:60%;background:var(--d);clip-path:polygon(0 0,100% 0,50% 100%);border-radius:7px 7px 0 0}
+.eb svg{position:absolute;left:50%;top:60%;width:24px;height:24px;transform:translate(-50%,-50%);color:var(--rose);fill:var(--rose)}
+.el{font-size:17px;line-height:1.2;text-align:center;color:var(--title);max-width:150px}
+.e.read .el::after{content:" ♡"}
+.ov{position:fixed;inset:0;overflow-y:auto;background-color:var(--bg);background-image:radial-gradient(circle at 16px 16px,var(--dot) 9px,transparent 9.5px),radial-gradient(circle at 48px 48px,var(--dot) 9px,transparent 9.5px);background-size:64px 64px;opacity:0;transition:opacity .4s;z-index:5}
+.ov.show{opacity:1}
+.ov[hidden]{display:none}
+.x{position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:14px;width:46px;height:46px;border-radius:50%;background:var(--x);color:var(--title);font-size:28px;line-height:1;z-index:6}
+.oc{min-height:100%;display:grid;justify-items:center;align-content:start;padding:calc(env(safe-area-inset-top,0px) + 12vh) 16px calc(env(safe-area-inset-bottom,0px) + 48px)}
+.oc>*{grid-area:1/1}
+.penv{position:relative;width:min(68vw,290px);aspect-ratio:3/2;perspective:700px;transition:opacity .5s,transform .6s}
+.pb{position:absolute;inset:0;background:var(--c);border:4px solid #fff;border-radius:12px;box-shadow:0 12px 24px rgba(176,30,88,.2)}
+.pf{position:absolute;left:0;right:0;top:0;height:60%;background:var(--d);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .8s ease}
+.penv svg{position:absolute;left:50%;top:58%;width:34px;height:34px;transform:translate(-50%,-50%);color:var(--rose);fill:var(--rose);transition:opacity .3s}
+.open .pf{transform:rotateX(180deg)}.open .penv svg{opacity:0}
+.out .penv{opacity:0;transform:translateY(60px) scale(.9)}
+.sp{width:min(100%,440px);opacity:0;transform:translateY(50px) scale(.8);align-self:start}
+.out .sp{opacity:1;transform:none;transition:opacity .6s,transform .8s cubic-bezier(.2,.9,.3,1)}
+.roll{display:block;height:20px;margin:0 -6px;border-radius:10px;background:linear-gradient(#fff,#F6E2EA 50%,#E3BFCF);box-shadow:0 3px 8px rgba(176,30,88,.18)}
+.sheet{overflow:hidden;background:var(--paper);margin:0 4px;box-shadow:0 8px 20px rgba(176,30,88,.1)}
+.in{padding:24px 22px 28px}
+.in h2{font-family:Caveat,cursive;font-weight:700;font-size:34px;line-height:1.1;color:var(--title);margin:0 0 14px}
+.in p{margin:0 0 1.1em;font-size:20px;line-height:1.55}
+:root{--bg:#FCEEDC;--chk:repeating-linear-gradient(90deg,transparent 0,rgba(240,150,168,.34) 5px,rgba(240,150,168,.34) 35px,transparent 40px,transparent 80px),repeating-linear-gradient(0deg,transparent 0,rgba(240,150,168,.34) 5px,rgba(240,150,168,.34) 35px,transparent 40px,transparent 80px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--chk:repeating-linear-gradient(90deg,transparent 0,rgba(240,140,170,.16) 5px,rgba(240,140,170,.16) 35px,transparent 40px,transparent 80px),repeating-linear-gradient(0deg,transparent 0,rgba(240,140,170,.16) 5px,rgba(240,140,170,.16) 35px,transparent 40px,transparent 80px)}}
+:root[data-theme="dark"]{--chk:repeating-linear-gradient(90deg,transparent 0,rgba(240,140,170,.16) 5px,rgba(240,140,170,.16) 35px,transparent 40px,transparent 80px),repeating-linear-gradient(0deg,transparent 0,rgba(240,140,170,.16) 5px,rgba(240,140,170,.16) 35px,transparent 40px,transparent 80px)}
+body,.ov{background-image:var(--chk);background-size:auto}
+.mb{transition:transform .8s cubic-bezier(.6,0,.9,.4) .45s,opacity .35s ease-in .7s}
+.el{opacity:0;transition:opacity .7s ease}
+.opened .el{opacity:1;transition-delay:1.9s}
+.ttl{transition:opacity .7s ease 1.9s}
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#FCEEDC;--paper:#FFFAF4;--ink:#7A2A4A;--title:#B01E58;--x:#F9C7D9;color-scheme:light;--chk:repeating-linear-gradient(90deg,transparent 0,rgba(247,176,196,.38) 4px,rgba(247,176,196,.38) 24px,transparent 28px,transparent 56px),repeating-linear-gradient(0deg,transparent 0,rgba(247,176,196,.38) 4px,rgba(247,176,196,.38) 24px,transparent 28px,transparent 56px)}
+.eq{grid-column:1/-1}
+.qc{width:min(100%,440px);background:var(--paper);border:3px solid #fff;border-radius:26px;padding:24px 20px;box-shadow:0 10px 24px rgba(176,30,88,.14)}
+.qn{margin:0 0 4px;font-size:16px;color:var(--title)}
+.qq{font-family:Caveat,cursive;font-weight:700;font-size:32px;line-height:1.15;color:var(--title);margin:0 0 16px}
+.opt{display:block;width:100%;text-align:left;background:#FDE3EA;border:2px solid #F7C4D3;border-radius:18px;padding:12px 14px;margin:0 0 10px;font-size:19px;line-height:1.3;color:var(--ink);transition:background .25s,border-color .25s}
+.opt.ok{background:#D7EFDD;border-color:#9FD2AE}.opt.no{background:#F6D2D2;border-color:#E49A9A}
+.opt:disabled{cursor:default}
+.fb{min-height:26px;margin:4px 0 8px;font-size:19px;color:var(--title)}
+.nx{display:block;width:100%;background:var(--rose);color:#fff;border-radius:18px;padding:12px;font-size:20px}
+.bar{height:6px;background:#F7C4D3;border-radius:3px;margin-bottom:14px;overflow:hidden}.bar i{display:block;height:100%;background:var(--rose);transition:width .3s}
+.big{font-family:Caveat,cursive;font-weight:700;font-size:64px;line-height:1.1;text-align:center;color:var(--title);margin:0}
+@media (prefers-reduced-motion:reduce){.mb svg,.fh{animation:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="h" viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.3-9A5.3 5.3 0 0 1 12 6a5.3 5.3 0 0 1 9.3 6C19 16.4 12 21 12 21z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol></svg>
+<main class="stage" id="stage">
+  <div class="wrap" id="wrap">
+    <button class="mb" id="mb" aria-label="Abrir el buzón">
+      <svg viewBox="0 0 300 300" aria-hidden="true">
+        <defs>
+          <linearGradient id="gb" x1="0" x2="1"><stop offset="0" stop-color="#FFF9EC"/><stop offset=".55" stop-color="#F7EAD3"/><stop offset="1" stop-color="#E9D5B4"/></linearGradient>
+          <linearGradient id="gw" x1="0" x2="1"><stop offset="0" stop-color="#E9C48F"/><stop offset=".5" stop-color="#F3D6A8"/><stop offset="1" stop-color="#C99A62"/></linearGradient>
+        </defs>
+        <ellipse cx="150" cy="282" rx="92" ry="9" fill="#A9794A" opacity=".2"/>
+        <path d="M92 266v8a58 14 0 0 0 116 0v-8z" fill="#C99A62"/>
+        <ellipse cx="150" cy="266" rx="58" ry="14" fill="#E9C48F"/>
+        <ellipse cx="150" cy="264" rx="40" ry="9" fill="#F3D6A8" opacity=".7"/>
+        <path d="M128 200h44v68c0 6-10 10-22 10s-22-4-22-10z" fill="url(#gw)"/>
+        <path d="M70 196V124C70 88 96 62 132 62H204C232 62 250 84 250 116V196C250 205 244 212 234 212H86C76 212 70 205 70 196Z" fill="url(#gb)"/>
+        <path d="M84 192V130C84 104 100 86 122 86C144 86 160 104 160 130V192Z" fill="#FBF0DC" stroke="#EAD9BB" stroke-width="3" stroke-linejoin="round"/>
+        <rect x="96" y="142" width="52" height="7" rx="3.5" fill="#DCC7A4"/>
+        <g transform="rotate(-12 104 146)"><rect x="66" y="128" width="66" height="38" rx="3" fill="#fff" stroke="#EFE6D6" stroke-width="1.5"/><path d="M66 130l33 21 33-21" fill="none" stroke="#E6DCC8" stroke-width="1.5" stroke-linejoin="round"/></g>
+        <path d="M96 72C130 64 190 64 226 72" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none" opacity=".6"/>
+        <rect x="191" y="78" width="11" height="70" rx="5.5" fill="#D93B3B"/>
+        <path d="M200 80H240L229 92L240 104H200Z" fill="#D93B3B" stroke="#D93B3B" stroke-width="3" stroke-linejoin="round"/>
+        <circle cx="196.500" cy="148" r="13" fill="#D93B3B"/>
+        <circle cx="193" cy="144" r="4" fill="#fff" opacity=".35"/>
+      </svg>
+    </button>
+    <p class="hint" id="hint">Toca el buzón</p>
+    <h1 class="ttl">Elige una carta</h1>
+    <div class="env" id="env"></div>
+  </div>
+</main>
+
+<div class="ov" id="ov" hidden>
+  <button class="x" id="x" aria-label="Cerrar la carta">×</button>
+  <div class="oc">
+    <div class="penv"><span class="pb"></span><span class="pf"></span><svg aria-hidden="true"><use href="#h" width="34" height="34"/></svg></div>
+    <div class="sp"><i class="roll"></i><div class="sheet" id="sheet"><div class="in" id="in"></div></div><i class="roll"></i></div>
+  </div>
+</div>
+
+<div class="ov" id="qz" hidden>
+  <button class="x" id="qx" aria-label="Cerrar el quiz">×</button>
+  <div class="oc" style="padding-top:calc(env(safe-area-inset-top,0px) + 84px)"><div class="qc" id="qb"></div></div>
+</div>
+
+<script>
+var LETTERS=[
+{id:"bienvenida",t:"Bienvenida",s:"Para empezar",body:`Amotito,
+
+Este es un buzón que hice para ti pensando en tener un lugar donde dejarte cartas aunque estemos lejos.
+
+Cada carta que veas aquí y en sí todas las cartas que te voy a hacer en mi vida las hago pensando en ti, para expresarte lo que siento y para hacerte feli porque sé que te gusta recibir detalles asi.
+
+Quiero que cuando abras este buzón sientas que estoy cerca aunque sea por un ratito.
+
+Con amor,
+Emanuel c:`},
+{id:"mal",t:"Para los días en los que te sientas mal",s:"Cuando lo necesites",body:`Mi vida,
+
+Si tas leyendo esto, lo más probable es que hoy sea uno de esos días en los que no te sientes bien, y aunque quisiera estar ahí contigo e intentar que todo sea un poquito más fácil, por el momento no puedo. Pero el no poder estar ahí contigo no significa que no pueda intentar que te sientas un poco mejor, así que por eso escribo esta carta. La escribo con el propósito de que cuando te sientas así recuerdes que tienes un niño que da la vida por ti y siempre te quiere ver feliz.
+
+Quiero que en momentos así recuerdes que lamentablemente no todos los días podemos estar bien. Hay días que son como hoy y es completamente normal que te sientas así, con ganas de llorar, con ganas de no hacer nada, con ganas de que el día se acabe, pero eso nunca va a cambiar lo que tú eres. Este momento tampoco va a durar para siempre.
+
+Y hoy que te sientes triste quiero que recuerdes cómo te veo yo. Te veo como la niña que amo, como esa niña con la que puedo ser yo mismo, como esa niña que siempre está para mí, como esa niña que con su risa vuelve todo mejor, como esa niña que me inspira a hacerla feliz.
+
+Y si llegas a sentir algún día que no eres suficiente, acuérdate que para mí nunca has tenido que ser perfecta porque yo no me enamoré de una versión perfecta de ti. Me enamoré de ti. Me enamoré de tu forma de ser, me enamoré de esa confianza que me das siempre, me enamoré de tu manera de demostrar amor, me enamoré de tu risa, me enamoré de tus gestos y de todos esos momentos que hemos construido.
+
+Quiero recordarte que hay alguien que siempre va a estar orgulloso de ti, incluso en los momentos en los que ni siquiera tú lo estás: yo. Y no necesariamente porque hagas cosas increíbles (que las haces), sino porque yo sé un poco lo que has tenido que pasar y la niña en la que te has convertido, esa niña que me da orgullo decir que es mi novia.
+
+Recuerda siempre que incluso en los días más difíciles sigues siendo la misma Valery de la que me enamoré.
+
+Ti amu mutisimo, amotito, y aunque probablemente ahora mismo no pueda ir a darte un abrazo, quiero que cuando leas esta carta imagines que lo estoy haciendo.
+
+Con amor,
+Tu niño titito c:`},
+{id:"dudes",t:"Para cuando dudes de ti",s:"Cuando lo necesites",body:`Amor,
+
+Cuando leas está carta va a ser porque estás pasando por un momento en el que dudas de ti, dudas que puedas llegar a hacer algo, pero quiero que te pares a pensar un momento en todo lo que has logrado en tu vida, todo lo que has conseguido porque has querido, todo lo que quizás un día lo miraste imposible o muy difícil de conseguir y hoy ya se te hace normal.
+
+Todo lo que alguna vez has deseado y has conseguido ha sido completamente porque te lo has merecido, de eso estoy seguro. Eres una niña que por tus acciones y forma de ser merece ser amada y que todo lo bueno de esta vida se te de.
+
+Quiero recordarte que incluso en los momentos como ahora que no crees es ti misma, hay un niño que siempre lo ha hecho y siempre lo hará, yo, yo sí creo en ti y jamás se me va pasar por la cabeza pensar que no eres capaz de lograr algo.
+Creo en la niña que eres, creo en las capacidades que tienes, creo que para ti jamás habrá algo que no puedas conseguir.
+
+Y creo que sé cual es tu secreto para conseguir todo lo que quieres, ser tu misma. Tú solo necesitas ser esa misma niña con ese corazón hermoso que siempre has tenido para conseguir todo lo que quieres.
+
+Y también quiero que sepas que si algún día se te olvida lo increíble que eres y quieres que te recuerden por qué te mereces todo lo bueno que te pasa, le puedes preguntar a tu niño titito, yo te lo voy a recordar las veces que quieras.
+
+Te amo, preciosa
+
+Con amor
+Emanuel c:`},
+{id:"enamore",t:"Para cuando quieras saber por qué me enamoré de ti",s:"Cuando lo necesites",body:`Vida,
+
+Lo que siempre te he dicho de que has sido una persona que siempre me ha hecho sentir una confianza y una paz cuando estoy contigo es yo creo que la razón principal por la cual me enamoré tanto de ti, y creo que me enamoré tanto porque esa misma confianza y comodidad me hizo sentir algo que nunca había sentido, el que una niña me amara por lo que era y no por lo que podía ofrecer.
+
+Tú fuiste la primera persona a la que me dieron ganas de comprarle algo por cuenta propia, porque quise, porque me nació, porque quería hacerte pasar un ratito bonito. Esas veces que antes de ir a estudiar en las tardes iba al D1 solo a comprarte gomitas las recuerdo de una manera bonita porque fue la primera vez que me enamoré y sentí un amor tan bonito por ti.
+
+Me enamoré también tanto de ti porque era increíble que podía hablar contigo de cualquier cosa y nunca me hacías mala cara o me mirabas raro, eso es algo tan hermoso de ti y que hace que me encantes tanto porque poder tener a una persona a la cual hablarle de cualquier bobada y que mucha veces le siga el juego a uno es PRECIOOOOSO, es increíble y algo que no se ve en todos lados. Desde el principio siempre te me hiciste una niña muy especial y creo que también eso era algo que me llamaba mucho la atención de ti, que no eras una niña como todas las otras, no eres simple, eres interesante, eres divertida, tienes unas personalidad que hace que a uno le den más ganas de estar contigo y todo eso yo lo notaba y hacía que me llamaras tanto la atención.
+
+También me he ido enamorando más a medida que te he ido conociendo. Ahora que soy tú novio y te conozco de otra manera no como amiga, me enamoro más de ti, con todo lo que bueno y lo malo. He aprendido amar todo eso, el hecho de que cuando la cago sé que me esperan cachetadas lo he aprendido a amar, el hecho de que te de gusto pegarme tambien lo he aprendido a amar, cuando a veces te enojas y te pones toa seca conmigo tmb lo he aprendido a amar, he aprendido a amar cada parte de ti y eso me hace ser feliz todos los días.
+
+Esas son unas de las razones por las cuales tu niño titito se enamoró y te ama tanto a ti c:
+
+Con cariño, Polosaurio c:`}
+];
+var COLS=[["#F9C7D9","#F3A9C6"],["#DCCBF0","#C6AEE4"],["#FAD7BE","#F5BC98"],["#CFE8D9","#A9D4BC"]];
+var read={};
+try{read=JSON.parse(localStorage.getItem("buzon-read")||"{}")}catch(e){}
+function save(){try{localStorage.setItem("buzon-read",JSON.stringify(read))}catch(e){}}
+function $(i){return document.getElementById(i)}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+var env=$("env"),ov=$("ov"),sheet=$("sheet"),timers=[],opened=false;
+var h='';
+LETTERS.forEach(function(l,i){var c=COLS[i%COLS.length];h+='<button class="e" data-i="'+i+'" style="--c:'+c[0]+';--d:'+c[1]+'"><span class="eb"><span class="ef"></span><svg aria-hidden="true"><use href="#h" width="24" height="24"/></svg></span><span class="el">'+l.t+'</span></button>'});
+h+='<button class="e eq" data-q="1" style="--c:#FFF0B8;--d:#F6D878"><span class="eb"><span class="ef"></span><svg aria-hidden="true"><use href="#h" width="24" height="24"/></svg></span><span class="el">¿Cuánto sabes de nosotros?</span></button>';
+env.innerHTML=h;
+function mark(){document.querySelectorAll(".e[data-i]").forEach(function(e,i){e.classList.toggle("read",!!read[LETTERS[i].id])})}
+mark();
+
+$("mb").addEventListener("click",function(){
+  if(opened)return;opened=true;
+  var mb=$("mb"),r0=mb.getBoundingClientRect(),ox=r0.left+r0.width*.3,oy=r0.top+r0.height*.5;
+  $("hint").classList.add("off");
+  $("wrap").classList.add("opened");
+  document.querySelectorAll(".e .eb").forEach(function(b,i){
+    var r=b.getBoundingClientRect(),d=.15+i*.2;
+    b.style.transition="none";b.style.opacity="0";
+    b.style.transform="translate("+(ox-r.left-r.width/2)+"px,"+(oy-r.top-r.height/2)+"px) scale(.25) rotate("+(i%2?16:-16)+"deg)";
+    b.getBoundingClientRect();
+    b.style.transition="transform .95s cubic-bezier(.2,.9,.3,1.15) "+d+"s,opacity .3s "+d+"s";
+    b.style.opacity="1";b.style.transform="none";
+  });
+  mb.classList.add("gone");
+});
+
+function later(f,ms){timers.push(setTimeout(f,ms))}
+function openL(i){
+  var l=LETTERS[i],c=COLS[i%COLS.length];
+  read[l.id]=1;save();
+  $("in").innerHTML="<h2>"+l.t+"</h2>"+l.body.split(/\n\n/).map(function(p){return "<p>"+esc(p).replace(/\n/g,"<br>")+"</p>"}).join("");
+  ov.style.setProperty("--c",c[0]);ov.style.setProperty("--d",c[1]);
+  ov.className="ov";sheet.style.transition="none";sheet.style.height="0px";
+  ov.hidden=false;ov.scrollTop=0;ov.getBoundingClientRect();
+  ov.classList.add("show");
+  later(function(){ov.classList.add("open")},350);
+  later(function(){ov.classList.add("out")},1250);
+  later(function(){
+    var H=$("in").offsetHeight,dur=Math.min(5500,1800+H*3.2);
+    sheet.style.transition="height "+dur+"ms cubic-bezier(.35,.1,.25,1)";
+    sheet.style.height=H+"px";
+    later(function(){sheet.style.transition="none";sheet.style.height="auto"},dur+150);
+  },2000);
+}
+function closeL(){
+  timers.forEach(clearTimeout);timers=[];
+  ov.classList.remove("show");mark();
+  setTimeout(function(){ov.hidden=true;ov.className="ov"},400);
+}
+env.addEventListener("click",function(e){var b=e.target.closest(".e");if(!b)return;if(b.hasAttribute("data-q"))openQ();else openL(parseInt(b.getAttribute("data-i"),10))});
+var QZ=[
+{q:"¿En qué lugar fue nuestro primer beso?",o:["En el colegio","Al frente de donde Don Lucho","Al frente del colegio","En tu casa"],a:1},
+{q:"¿En qué lugar fue nuestra primera salida?",o:["Alta Brisa","El parche","María Bonita","A cine"],a:0},
+{q:"¿Qué contenía el primer detalle de este año que tuve contigo?",o:["Una carta, un ramito chiquito, chocolatinas","Un ramito chiquito, una carta, unos sobres con frases, chocolatinas","Una carta, un dulcecito, un papelito","Una carta y ya"],a:1},
+{q:"¿Cuántas cartas (físicas) te he escrito?",o:["5","4","9","7"],a:3},
+{q:"¿Cuál fue el primer detalle que tuve contigo?",o:["Una carta","Gomitas","Una pulsera","Una Jumbo"],a:1},
+{q:"¿Qué particular característica tiene el llavero que un día me regalaste?",o:["Está despintado","No tiene ojos","Está partido a la mitad","Tiene una boca muy sonriente"],a:1},
+{q:"¿Por qué fue que nos pudimos graduar el año pasado?",o:["Porque somos muy estudiosos","Porque nos besamos","Porque somos buenos copiando","Porque el examen estaba muy fácil"],a:1},
+{q:"¿Cuántos lunares tiene mi cara?",o:["5","7","4","6"],a:0},
+{q:"¿De qué color es la gorra que un día te regalé?",o:["Negra","Azul","Negra con rojo","Rojo"],a:2},
+{q:"¿Qué tal quedaron las donas que un día hicimos?",o:["Ricas","Deliciosas","Horribles","Comestibles"],a:3},
+{q:"¿Qué es lo que más digo cuando estoy con Ana?",o:["Six seven","Papoi","Papeada","Me pashe me pashe"],a:0}
+];
+var qi=0,sc=0,lk=false,qz=$("qz");
+function qshow(){
+  var q=QZ[qi];lk=false;
+  $("qb").innerHTML='<div class="bar"><i style="width:'+(qi/QZ.length*100)+'%"></i></div><p class="qn">Pregunta '+(qi+1)+' de '+QZ.length+'</p><h2 class="qq">'+q.q+'</h2>'+q.o.map(function(t,k){return '<button class="opt" data-k="'+k+'">'+t+'</button>'}).join('')+'<p class="fb" id="fb" aria-live="polite"></p><button class="nx" id="nx" hidden>'+(qi===QZ.length-1?"Ver mi resultado":"Siguiente")+'</button>';
+}
+function qend(){
+  var n=QZ.length,m=sc===n?"Me conoces perfecto. No esperaba menos de ti.":sc>=n*.7?"Me conoces muy bien, amotito.":sc>=n*.4?"Nada mal, pero te toca prestarme más atención c:":"Mmm… vas a tener que volver a intentarlo.";
+  $("qb").innerHTML='<h2 class="qq" style="text-align:center">Tu resultado</h2><p class="big">'+sc+' de '+n+'</p><p style="text-align:center;margin:8px 0 18px">'+m+'</p><button class="nx" id="again">Volver a intentar</button>';
+}
+function openQ(){qi=0;sc=0;qshow();qz.hidden=false;qz.scrollTop=0;qz.getBoundingClientRect();qz.classList.add("show")}
+function closeQ(){qz.classList.remove("show");setTimeout(function(){qz.hidden=true},400)}
+$("qb").addEventListener("click",function(e){
+  var o=e.target.closest(".opt");
+  if(o&&!lk){
+    lk=true;var k=parseInt(o.getAttribute("data-k"),10),ok=k===QZ[qi].a;
+    if(ok)sc++;
+    document.querySelectorAll(".opt").forEach(function(b,j){b.disabled=true;if(j===QZ[qi].a)b.classList.add("ok")});
+    if(!ok)o.classList.add("no");
+    $("fb").textContent=ok?"¡Esa era!":"Casi… ahí no era.";
+    $("nx").hidden=false;return;
+  }
+  if(e.target.closest("#nx")){qi++;qi<QZ.length?qshow():qend();qz.scrollTop=0}
+  if(e.target.closest("#again")){qi=0;sc=0;qshow()}
+});
+$("qx").addEventListener("click",closeQ);
+$("x").addEventListener("click",closeL);
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!ov.hidden)closeL()});
+</script>
+</body>
+</html>
